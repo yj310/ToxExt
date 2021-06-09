@@ -33,8 +33,8 @@ bool CALLBACK ModifyDeviceSettings( DXUTDeviceSettings* pDeviceSettings, void* p
 HRESULT CALLBACK OnD3D9CreateDevice( IDirect3DDevice9* pd3dDevice, const D3DSURFACE_DESC* pBackBufferSurfaceDesc,
                                      void* pUserContext )
 {
-    pageManager.CreateIntroPage();
-    //pageManager.CreateInputPage();
+    //pageManager.CreateIntroPage();
+    pageManager.CreateTitlePage();
     for (int i = 0; i < 6; i++)
     {
         playerInfo[i].score = 0;
@@ -116,7 +116,7 @@ INT WINAPI wWinMain( HINSTANCE, HINSTANCE, LPWSTR, int )
     DXUTSetHotkeyHandling( true, true, true );  // handle the default hotkeys
     DXUTSetCursorSettings( true, true ); // Show the cursor and clip it when in full screen
     DXUTCreateWindow( L"ToxExt" );
-    DXUTCreateDevice( true, WINDOW_WIDTH, WINDOW_HEIGHT );
+    DXUTCreateDevice( false, WINDOW_WIDTH, WINDOW_HEIGHT );
 
     // Start the render loop
     DXUTMainLoop();

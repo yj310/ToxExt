@@ -1,6 +1,7 @@
 #include "DXUT.h"
 #include "title_page.h"
 #include "global.h"
+#include <atlconv.h>
 
 TitlePage::TitlePage()
 {
@@ -17,7 +18,7 @@ TitlePage::TitlePage()
 	backgroundTex = new LPDIRECT3DTEXTURE9();
 	D3DXCreateTextureFromFileExA(
 		DXUTGetD3D9Device()
-		, "resource/image/titleBackground.png"
+		, "resource/image/basicBackground.png"
 		, D3DX_DEFAULT_NONPOW2
 		, D3DX_DEFAULT_NONPOW2
 		, 0, 0
@@ -162,6 +163,21 @@ TitlePage::TitlePage()
 		, exitButtonTex2);
 
 	D3DXCreateSprite(DXUTGetD3D9Device(), &spr);
+
+
+	D3DXCreateFont(DXUTGetD3D9Device(), 80, 0, FW_LIGHT, 1, FALSE, DEFAULT_CHARSET,
+		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
+		L"Cafe24 Oneprettynight", &titleFont);
+
+	D3DXCreateFont(DXUTGetD3D9Device(), 35, 0, FW_LIGHT, 1, FALSE, DEFAULT_CHARSET,
+		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
+		L"Cafe24 Oneprettynight", &menuFont);
+
+	D3DXCreateFont(DXUTGetD3D9Device(), 35, 0, FW_BOLD, 1, FALSE, DEFAULT_CHARSET,
+		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
+		L"Cafe24 Oneprettynight", &menuBoldFont);
+
+
 }
 
 TitlePage::~TitlePage()
@@ -178,8 +194,13 @@ TitlePage::~TitlePage()
 	(*exitButtonTex1)->Release();
 	(*exitButtonTex2)->Release();
 	spr->Release();
+	titleFont->Release();
+	menuFont->Release();
+	menuBoldFont->Release();
 }
 
+#define MENUY 400
+#define BUTTON_PADDING 10
 void TitlePage::Update()
 {
 
@@ -190,8 +211,8 @@ void TitlePage::Update()
 	if (pt.x > (WINDOW_WIDTH - BUTTON_WIDTH) / 2
 		&& pt.x < (WINDOW_WIDTH + BUTTON_WIDTH) / 2)
 	{
-		if (pt.y > 320 + (BUTTON_HEIGHT + 20) * 0
-			&& pt.y < 320 + (BUTTON_HEIGHT + 20) * 1 - 20)
+		if (pt.y > MENUY + BUTTON_HEIGHT * 0 - BUTTON_PADDING
+			&& pt.y < MENUY + BUTTON_HEIGHT * 1 - BUTTON_PADDING)
 		{
 			startButtonState = 1;
 		}
@@ -201,8 +222,8 @@ void TitlePage::Update()
 		}
 
 
-		if (pt.y > 320 + (BUTTON_HEIGHT + 20) * 1
-			&& pt.y < 320 + (BUTTON_HEIGHT + 20) * 2 - 20)
+		if (pt.y > MENUY + BUTTON_HEIGHT * 1 - BUTTON_PADDING
+			&& pt.y < MENUY + BUTTON_HEIGHT * 2 - BUTTON_PADDING)
 		{
 			introButtonState = 1;
 		}
@@ -212,8 +233,8 @@ void TitlePage::Update()
 		}
 
 
-		if (pt.y > 320 + (BUTTON_HEIGHT + 20) * 2
-			&& pt.y < 320 + (BUTTON_HEIGHT + 20) * 3 - 20)
+		if (pt.y > MENUY + BUTTON_HEIGHT * 2 - BUTTON_PADDING
+			&& pt.y < MENUY + BUTTON_HEIGHT * 3 - BUTTON_PADDING)
 		{
 			manualButtonState = 1;
 		}
@@ -223,8 +244,8 @@ void TitlePage::Update()
 		}
 
 
-		if (pt.y > 320 + (BUTTON_HEIGHT + 20) * 3
-			&& pt.y < 320 + (BUTTON_HEIGHT + 20) * 4 - 20)
+		if (pt.y > MENUY + BUTTON_HEIGHT * 3 - BUTTON_PADDING
+			&& pt.y < MENUY + BUTTON_HEIGHT * 4 - BUTTON_PADDING)
 		{
 			rankingButtonState = 1;
 		}
@@ -234,8 +255,8 @@ void TitlePage::Update()
 		}
 
 
-		if (pt.y > 320 + (BUTTON_HEIGHT + 20) * 4
-			&& pt.y < 320 + (BUTTON_HEIGHT + 20) * 5 - 20)
+		if (pt.y > MENUY + BUTTON_HEIGHT * 4 - BUTTON_PADDING
+			&& pt.y < MENUY + BUTTON_HEIGHT * 5 - BUTTON_PADDING)
 		{
 			exitButtonState = 1;
 		}
@@ -286,12 +307,23 @@ void TitlePage::Render()
 	D3DXVECTOR3 pos;
 	D3DXVECTOR3 cen;
 
+	USES_CONVERSION;
+	char cvalue[256];
+	WCHAR* wvalue;
+	RECT rc;
 
+
+
+	// background
 	spr->Begin(D3DXSPRITE_ALPHABLEND);
 	spr->Draw(*backgroundTex, nullptr, nullptr, nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
+	spr->End();
 
 
-	pos = { (WINDOW_WIDTH - BUTTON_WIDTH) / 2, 320 + (BUTTON_HEIGHT + 20) * 0, 0 };
+
+
+	// buttons
+	/*pos = { (WINDOW_WIDTH - BUTTON_WIDTH) / 2, 320 + (BUTTON_HEIGHT + 20) * 0, 0 };
 	if(startButtonState == 0)
 		spr->Draw(*startButtonTex1, nullptr, nullptr, &pos, D3DCOLOR_ARGB(255, 255, 255, 255));
 	else
@@ -320,7 +352,61 @@ void TitlePage::Render()
 		spr->Draw(*exitButtonTex1, nullptr, nullptr, &pos, D3DCOLOR_ARGB(255, 255, 255, 255));
 	else
 		spr->Draw(*exitButtonTex2, nullptr, nullptr, &pos, D3DCOLOR_ARGB(255, 255, 255, 255));
+	*/
 
-	spr->End();
+
+	rc = { 0, 0, WINDOW_WIDTH, WINDOW_HEIGHT };
+
+
+	rc.top = 120;
+	sprintf_s(cvalue, "ToxExt");
+	wvalue = A2W(cvalue);
+	titleFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
+
+
+	rc.top = 400;
+	sprintf_s(cvalue, "게임시작");
+	wvalue = A2W(cvalue);
+	if (startButtonState == 0)
+		menuFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+	else
+		menuBoldFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
+	rc.top = 450;
+	sprintf_s(cvalue, "게임설명");
+	wvalue = A2W(cvalue);
+	if (introButtonState == 0)
+		menuFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+	else
+		menuBoldFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
+	rc.top = 500;
+	sprintf_s(cvalue, "게임방법");
+	wvalue = A2W(cvalue);
+	if (manualButtonState == 0)
+		menuFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+	else
+		menuBoldFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
+	rc.top = 550;
+	sprintf_s(cvalue, "랭킹");
+	wvalue = A2W(cvalue);
+	if (rankingButtonState == 0)
+		menuFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+	else
+		menuBoldFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
+	rc.top = 600;
+	sprintf_s(cvalue, "종료");
+	wvalue = A2W(cvalue);
+	if (exitButtonState == 0)
+		menuFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+	else
+		menuBoldFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
+
+
+
 }
 

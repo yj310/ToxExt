@@ -20,6 +20,9 @@ public:
 	LPDIRECT3DTEXTURE9* exitButtonTex1;
 	LPDIRECT3DTEXTURE9* exitButtonTex2;
 	LPD3DXSPRITE spr;
+	ID3DXFont* titleFont;
+	ID3DXFont* menuFont; 
+	ID3DXFont* menuBoldFont;
 
 	int startButtonState;
 	int introButtonState;
