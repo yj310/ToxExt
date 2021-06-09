@@ -1,5 +1,6 @@
 
 ToxExt/EmptyProject/.vs/
+ToxExt/EmptyProject/Release/EmptyProject.tlog/
 
 # Prerequisites
 *.d
@@ -33,3 +34,21 @@ ToxExt/EmptyProject/.vs/
 *.exe
 *.out
 *.app
+
+ToxExt/EmptyProject/Release/EmptyProject_2010.log
+
+ToxExt/EmptyProject/Release/EmptyProject.iobj
+
+ToxExt/EmptyProject/Release/EmptyProject.ipdb
+
+ToxExt/EmptyProject/Release/EmptyProject.pdb
+
+ToxExt/EmptyProject/Release/vc142.pdb
+
+*.pdb
+
+*.iobj
+
+*.ipdb
+
+*.log
