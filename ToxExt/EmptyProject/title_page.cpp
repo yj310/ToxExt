@@ -17,34 +17,14 @@ TitlePage::TitlePage()
 
 
 	backgroundTex = new LPDIRECT3DTEXTURE9();
-	D3DXCreateTextureFromFileExA(
-		DXUTGetD3D9Device()
-		, "resource/image/basicBackground.png"
-		, D3DX_DEFAULT_NONPOW2
-		, D3DX_DEFAULT_NONPOW2
-		, 0, 0
-		, D3DFMT_UNKNOWN
-		, D3DPOOL_MANAGED
-		, D3DX_DEFAULT
-		, D3DX_DEFAULT
-		, 0, nullptr, nullptr
-		, backgroundTex);
+	mCreateTexture("resource/image/basicBackground.png", backgroundTex);
 
 	D3DXCreateSprite(DXUTGetD3D9Device(), &spr);
 
 
-
-	D3DXCreateFont(DXUTGetD3D9Device(), 80, 0, FW_LIGHT, 1, FALSE, DEFAULT_CHARSET,
-		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
-		L"Cafe24 Oneprettynight", &titleFont);
-
-	D3DXCreateFont(DXUTGetD3D9Device(), 35, 0, FW_LIGHT, 1, FALSE, DEFAULT_CHARSET,
-		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
-		L"Cafe24 Oneprettynight", &menuFont);
-
-	D3DXCreateFont(DXUTGetD3D9Device(), 35, 0, FW_BOLD, 1, FALSE, DEFAULT_CHARSET,
-		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
-		L"Cafe24 Oneprettynight", &menuBoldFont);
+	mCreateFont(&titleFont, 80, FW_LIGHT);
+	mCreateFont(&menuFont, 35, FW_LIGHT);
+	mCreateFont(&menuBoldFont, 35, FW_BOLD);
 
 
 }
@@ -186,7 +166,6 @@ void TitlePage::Render()
 	sprintf_s(cvalue, "ToxExt");
 	wvalue = A2W(cvalue);
 	titleFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-
 
 
 	// menu

@@ -52,3 +52,7 @@ ToxExt/EmptyProject/Release/vc142.pdb
 *.ipdb
 
 *.log
+
+*.filters
+
+*.vcxproj
