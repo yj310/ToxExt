@@ -48,11 +48,14 @@ public:
 	int timer = 3 * 60;
 
 	LPDIRECT3DTEXTURE9* backgroundTex;
+	LPDIRECT3DTEXTURE9* basicTex;
 	LPDIRECT3DTEXTURE9* floorTex;
 	LPDIRECT3DTEXTURE9* basicMaskTex;
 	LPDIRECT3DTEXTURE9* badMaskTex;
 	LPDIRECT3DTEXTURE9* finishTex;
 	LPDIRECT3DTEXTURE9* clearTex;
+	LPDIRECT3DTEXTURE9* timerFrameTex;
+	LPDIRECT3DTEXTURE9* timerFillTex;
 	LPD3DXSPRITE spr;
 
 
@@ -63,8 +66,11 @@ public:
 	int virtualMap[FLOOR_PIXEL];
 	int prevMap[FLOOR_PIXEL];
 
-	ID3DXFont* font;
+	ID3DXFont* font; 
 	ID3DXFont* timerFont;
+	ID3DXFont* titleFont;
+	ID3DXFont* persentFont;
+	ID3DXFont* scoreFont;
 
 	void Load();
 

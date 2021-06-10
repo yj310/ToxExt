@@ -55,16 +55,22 @@ FirstGamePage::FirstGamePage()
 
 FirstGamePage::~FirstGamePage()
 {
-
+	
 	(*backgroundTex)->Release();
+	(*basicTex)->Release();
 	(*floorTex)->Release();
 	(*basicMaskTex)->Release();
 	(*badMaskTex)->Release();
 	(*finishTex)->Release();
 	(*clearTex)->Release();
-	spr->Release();
+	(*timerFrameTex)->Release();
+	(*timerFillTex)->Release();
+	spr->Release(); 
 	font->Release();
 	timerFont->Release();
+	titleFont->Release(); 
+	persentFont->Release();
+	scoreFont->Release();
 
 	for (int i = 0; i < enemys.size(); i++)
 	{
@@ -94,100 +100,33 @@ D3DXVECTOR2 FirstGamePage::GetEnemyPos()
 
 void FirstGamePage::Load()
 {
-
-	D3DXCreateFont(DXUTGetD3D9Device(), 30, 0, FW_BOLD, 1, FALSE, DEFAULT_CHARSET,
-		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
-		L"³ª´®¹Ù¸¥°íµñ", &font);
-	D3DXCreateFont(DXUTGetD3D9Device(), 45, 0, FW_BOLD, 1, FALSE, DEFAULT_CHARSET,
-		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
-		L"³ª´®¹Ù¸¥°íµñ", &timerFont);
-
-
-
+	mCreateFont(&font, 30, FW_LIGHT);
+	mCreateFont(&timerFont, 45, FW_LIGHT);
+	mCreateFont(&titleFont, 40, FW_LIGHT);
+	mCreateFont(&persentFont, 35, FW_LIGHT);
+	mCreateFont(&scoreFont, 30, FW_LIGHT);
+	
 	backgroundTex = new LPDIRECT3DTEXTURE9();
-	D3DXCreateTextureFromFileExA(
-		DXUTGetD3D9Device()
-		, "resource/image/firstGameBackground.png"
-		, D3DX_DEFAULT_NONPOW2
-		, D3DX_DEFAULT_NONPOW2
-		, 0, 0
-		, D3DFMT_UNKNOWN
-		, D3DPOOL_MANAGED
-		, D3DX_DEFAULT
-		, D3DX_DEFAULT
-		, 0, nullptr, nullptr
-		, backgroundTex);
-
+	basicTex = new LPDIRECT3DTEXTURE9();
 	floorTex = new LPDIRECT3DTEXTURE9();
-	D3DXCreateTextureFromFileExA(
-		DXUTGetD3D9Device()
-		, "resource/image/floor.png"
-		, D3DX_DEFAULT_NONPOW2
-		, D3DX_DEFAULT_NONPOW2
-		, 0, 0
-		, D3DFMT_UNKNOWN
-		, D3DPOOL_MANAGED
-		, D3DX_DEFAULT
-		, D3DX_DEFAULT
-		, 0, nullptr, nullptr
-		, floorTex);
-
 	basicMaskTex = new LPDIRECT3DTEXTURE9();
-	D3DXCreateTextureFromFileExA(
-		DXUTGetD3D9Device()
-		, "resource/image/mask1.png"
-		, D3DX_DEFAULT_NONPOW2
-		, D3DX_DEFAULT_NONPOW2
-		, 0, 0
-		, D3DFMT_UNKNOWN
-		, D3DPOOL_MANAGED
-		, D3DX_DEFAULT
-		, D3DX_DEFAULT
-		, 0, nullptr, nullptr
-		, basicMaskTex);
-
 	badMaskTex = new LPDIRECT3DTEXTURE9();
-	D3DXCreateTextureFromFileExA(
-		DXUTGetD3D9Device()
-		, "resource/image/mask3.png"
-		, D3DX_DEFAULT_NONPOW2
-		, D3DX_DEFAULT_NONPOW2
-		, 0, 0
-		, D3DFMT_UNKNOWN
-		, D3DPOOL_MANAGED
-		, D3DX_DEFAULT
-		, D3DX_DEFAULT
-		, 0, nullptr, nullptr
-		, badMaskTex);
-
 	finishTex = new LPDIRECT3DTEXTURE9();
-	D3DXCreateTextureFromFileExA(
-		DXUTGetD3D9Device()
-		, "resource/image/isDead.png"
-		, D3DX_DEFAULT_NONPOW2
-		, D3DX_DEFAULT_NONPOW2
-		, 0, 0
-		, D3DFMT_UNKNOWN
-		, D3DPOOL_MANAGED
-		, D3DX_DEFAULT
-		, D3DX_DEFAULT
-		, 0, nullptr, nullptr
-		, finishTex);
-
 	clearTex = new LPDIRECT3DTEXTURE9();
-	D3DXCreateTextureFromFileExA(
-		DXUTGetD3D9Device()
-		, "resource/image/isClear.png"
-		, D3DX_DEFAULT_NONPOW2
-		, D3DX_DEFAULT_NONPOW2
-		, 0, 0
-		, D3DFMT_UNKNOWN
-		, D3DPOOL_MANAGED
-		, D3DX_DEFAULT
-		, D3DX_DEFAULT
-		, 0, nullptr, nullptr
-		, clearTex);
+	timerFrameTex = new LPDIRECT3DTEXTURE9();
+	timerFillTex = new LPDIRECT3DTEXTURE9();
 
+	mCreateTexture("resource/image/firstGameBackground.png", backgroundTex);
+	mCreateTexture("resource/image/basicImage.png", basicTex);
+	mCreateTexture("resource/image/floor.png", floorTex);
+	mCreateTexture("resource/image/mask1.png", basicMaskTex);
+	mCreateTexture("resource/image/mask3.png", badMaskTex);
+	mCreateTexture("resource/image/isDead.png", finishTex);
+	mCreateTexture("resource/image/isClear.png", clearTex);
+	mCreateTexture("resource/image/timerFrame.png", timerFrameTex);
+	mCreateTexture("resource/image/timerFill.png", timerFillTex);
+
+	
 
 	D3DLOCKED_RECT lr;
 	RECT rc = { 0, 0, FLOOR_WIDTH, FLOOR_HEIGHT };
@@ -862,6 +801,7 @@ void FirstGamePage::Cheat()
 	}
 	
 }
+
 void FirstGamePage::Update()
 {
 	if (!isFinish && !isClear)
@@ -909,7 +849,7 @@ void FirstGamePage::Update()
 		{
 			stayCount++;
 		}
-		if (stayCount >= 100)
+		if (stayCount >= 300)
 		{
 			player->Damage(1);
 			stayCount = 0;
@@ -954,6 +894,17 @@ void FirstGamePage::Render()
 {
 	D3DXVECTOR3 pos;
 	D3DXVECTOR3 cen;
+	USES_CONVERSION;
+	int ivalue; int ivalue2;
+	float fvalue;
+	char cvalue[256];
+	WCHAR* wvalue;
+	RECT rc;
+
+	int x;
+	int y;
+	int width;
+	int height;
 
 
 	spr->Begin(D3DXSPRITE_ALPHABLEND);
@@ -963,7 +914,130 @@ void FirstGamePage::Render()
 	pos = { GAME_X, GAME_Y, 0 };
 	spr->Draw(*floorTex, nullptr, nullptr, &pos, D3DCOLOR_ARGB(255, 255, 255, 255));
 
+
+	// ui
+	// left
+	rc = { 0, 0, 179, WINDOW_HEIGHT };
+	pos = { 0, 0, 0 };
+	spr->Draw(*basicTex, &rc, nullptr, &pos, D3DCOLOR_ARGB(255, 18, 12, 30));
+	
+	rc = { 0, 0, 2, WINDOW_HEIGHT };
+	pos = { 179 - 2, 0, 0 };
+	spr->Draw(*basicTex, &rc, nullptr, &pos, D3DCOLOR_ARGB(255, 255, 255, 255));
+	
+	// right
+	rc = { 0, 0, 179, WINDOW_HEIGHT };
+	pos = { WINDOW_WIDTH - 179, 0, 0 };
+	spr->Draw(*basicTex, &rc, nullptr, &pos, D3DCOLOR_ARGB(255, 18, 12, 30));
+	
+	rc = { 0, 0, 2, WINDOW_HEIGHT };
+	pos = { WINDOW_WIDTH - 179, 0, 0 };
+	spr->Draw(*basicTex, &rc, nullptr, &pos, D3DCOLOR_ARGB(255, 255, 255, 255));
+	
+	// top
+	rc = { 0, 0, WINDOW_WIDTH, 72 };
+	pos = { 0, 0, 0 };
+	spr->Draw(*basicTex, &rc, nullptr, &pos, D3DCOLOR_ARGB(255, 18, 12, 30));
+
+	rc = { 0, 0, WINDOW_WIDTH, 2 };
+	pos = { 0, 72 - 2, 0 };
+	spr->Draw(*basicTex, &rc, nullptr, &pos, D3DCOLOR_ARGB(255, 255, 255, 255));
+
+
+
 	spr->End();
+
+	
+
+
+	rc = { 25, 5, WINDOW_WIDTH, 72 };
+	sprintf_s(cvalue, "Stage 1");
+	wvalue = A2W(cvalue);
+	titleFont->DrawText(NULL, wvalue, -1, &rc, DT_VCENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
+
+
+
+
+	
+	/*iscore = MaxLand;
+	sprintf(cscore, "%d", iscore);
+	wscore = A2W(cscore);
+	rc = { 0, 50, 200, 200 };
+	font->DrawText(NULL, wscore, -1, &rc, DT_NOCLIP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));*/
+
+	// score
+	ivalue = score + myLand;
+	sprintf_s(cvalue, "Score");
+	wvalue = A2W(cvalue);
+	rc = { 10, 130, WINDOW_WIDTH, WINDOW_HEIGHT };
+	titleFont->DrawText(NULL, wvalue, -1, &rc, DT_NOCLIP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
+	ivalue = score + myLand;
+	sprintf_s(cvalue, "%010d", ivalue);
+	wvalue = A2W(cvalue);
+	rc = { 10, 175, WINDOW_WIDTH, WINDOW_HEIGHT };
+	scoreFont->DrawText(NULL, wvalue, -1, &rc, DT_NOCLIP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
+
+	// land persent
+	fvalue = persent;
+	sprintf_s(cvalue, "%.1f%%", fvalue);
+	wvalue = A2W(cvalue);
+	rc = { 0, 0, WINDOW_WIDTH / 2 - 20, 72 };
+	persentFont->DrawText(NULL, wvalue, -1, &rc, DT_RIGHT | DT_VCENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
+	sprintf_s(cvalue, ":");
+	wvalue = A2W(cvalue);
+	rc = { 0, 0, WINDOW_WIDTH, 72 };
+	persentFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER | DT_VCENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
+	fvalue = superEnemy->returnPersent();
+	sprintf_s(cvalue, "%.1f%%", fvalue);
+	wvalue = A2W(cvalue);
+	rc = { WINDOW_WIDTH / 2 + 20, 0, WINDOW_WIDTH, 72 };
+	persentFont->DrawText(NULL, wvalue, -1, &rc, DT_LEFT | DT_VCENTER, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
+
+	
+
+	// timer
+	sprintf_s(cvalue, "Timer");
+	wvalue = A2W(cvalue);
+	rc = { WINDOW_WIDTH - 179, 130, WINDOW_WIDTH, WINDOW_HEIGHT };
+	titleFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
+	x = 200;
+	width = 32;
+	spr->Begin(D3DXSPRITE_ALPHABLEND);
+	pos = { (float)WINDOW_WIDTH - ((179 + width) / 2), (float)x, 0 };
+	spr->Draw(*timerFrameTex, nullptr, nullptr, &pos, D3DCOLOR_ARGB(255, 255, 255, 255));
+	spr->End();
+
+	width = 26;
+	height = 373;
+	spr->Begin(D3DXSPRITE_ALPHABLEND);
+	pos = { (float)WINDOW_WIDTH - ((179 + width) / 2),(float)x + 3 + (height * timeCount / timer), 0 };
+	rc = {0, height * timeCount / timer, 26, height };
+	spr->Draw(*timerFillTex, &rc, nullptr, &pos, D3DCOLOR_ARGB(255, 255, 255, 255));
+	spr->End();
+
+	ivalue = (timer - timeCount) / 60;
+	ivalue2 = (timer - timeCount) % 60;
+	sprintf_s(cvalue, "%d:%02d", ivalue, ivalue2);
+	wvalue = A2W(cvalue);
+	rc = { WINDOW_WIDTH - 179, 600, WINDOW_WIDTH, WINDOW_HEIGHT };
+	timerFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+	
+
+
+
+
+
+	/*ivalue = moveCount;
+	sprintf_s(cvalue, "%d/%d", ivalue, player->getMaxMove());
+	wvalue = A2W(cvalue);
+	rc = { 0, 500, WINDOW_WIDTH, WINDOW_HEIGHT };
+	font->DrawText(NULL, wvalue, -1, &rc, DT_NOCLIP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));*/
 
 
 	/*for (int i = 0; i < items.size(); i++)
@@ -977,60 +1051,6 @@ void FirstGamePage::Render()
 	superEnemy->Render();
 	player->Render();
 
-
-
-
-	USES_CONVERSION;
-	int ivalue; int ivalue2;
-	float fvalue;
-	char cvalue[256];
-	WCHAR* wvalue;
-	RECT rc;
-
-
-
-	
-	/*iscore = MaxLand;
-	sprintf(cscore, "%d", iscore);
-	wscore = A2W(cscore);
-	rc = { 0, 50, 200, 200 };
-	font->DrawText(NULL, wscore, -1, &rc, DT_NOCLIP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));*/
-
-	ivalue = score + myLand;
-	sprintf_s(cvalue, "%d", ivalue);
-	wvalue = A2W(cvalue);
-	rc = { 10, 150, WINDOW_WIDTH, WINDOW_HEIGHT };
-	font->DrawText(NULL, wvalue, -1, &rc, DT_NOCLIP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-
-
-
-	fvalue = persent;
-	sprintf_s(cvalue, "%.1f%%", fvalue);
-	wvalue = A2W(cvalue);
-	rc = { 0, 500, WINDOW_WIDTH - 10, WINDOW_HEIGHT };
-	timerFont->DrawText(NULL, wvalue, -1, &rc, DT_RIGHT, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-
-	fvalue = superEnemy->returnPersent();
-	sprintf_s(cvalue, "%.1f%%", fvalue);
-	wvalue = A2W(cvalue);
-	rc = { 0, 600, WINDOW_WIDTH - 10, WINDOW_HEIGHT };
-	timerFont->DrawText(NULL, wvalue, -1, &rc, DT_RIGHT, D3DXCOLOR(1.0f, 0.0f, 0.0f, 1.0f));
-
-	
-	ivalue = (timer - timeCount) / 60;
-	ivalue2 = (timer - timeCount) % 60;
-	sprintf_s(cvalue, "%d:%02d", ivalue, ivalue2);
-	wvalue = A2W(cvalue);
-	rc = { 1175, 20, WINDOW_WIDTH, WINDOW_HEIGHT };
-	timerFont->DrawText(NULL, wvalue, -1, &rc, DT_NOCLIP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
-	
-
-
-	ivalue = moveCount;
-	sprintf_s(cvalue, "%d/%d", ivalue, player->getMaxMove());
-	wvalue = A2W(cvalue);
-	rc = { 0, 500, WINDOW_WIDTH, WINDOW_HEIGHT };
-	font->DrawText(NULL, wvalue, -1, &rc, DT_NOCLIP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 
 
 	if (isFinish)
@@ -1047,6 +1067,5 @@ void FirstGamePage::Render()
 
 		spr->End();
 	}
-
 
 }

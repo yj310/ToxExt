@@ -37,9 +37,9 @@ Player::Player()
 	}
 
 	speed = 2;
-	hp = 5;
+	maxHP = 6;
+	hp = maxHP;
 	maxMove = 200;
-	maxHP = 5;
 	playerTex = new LPDIRECT3DTEXTURE9();
 	D3DXCreateTextureFromFileExA(
 		DXUTGetD3D9Device()
@@ -105,7 +105,7 @@ void Player::Render()
 	spr->Draw(*playerTex, nullptr, nullptr, &pos, D3DCOLOR_ARGB(255, 255, 255, 255));
 	for (int i = 0; i < hp; i++)
 	{
-		pos = {1180, (float)200 + (25 * i), 0 };
+		pos = { (float)1120 + (25 * i), 25, 0 };
 		if(isNotDamage)
 			spr->Draw(*hpTex, nullptr, nullptr, &pos, D3DCOLOR_ARGB(255, 255, 0, 0));
 		else
