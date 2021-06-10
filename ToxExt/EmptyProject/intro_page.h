@@ -9,10 +9,12 @@ public:
 	virtual ~IntroPage();
 
 	LPDIRECT3DTEXTURE9* backgroundTex;
-	LPDIRECT3DTEXTURE9* backButtonTex1;
-	LPDIRECT3DTEXTURE9* backButtonTex2;
+	LPDIRECT3DTEXTURE9* lineTex;
 	LPD3DXSPRITE spr;
-	ID3DXFont* font;
+	ID3DXFont* titleFont; 
+	ID3DXFont* textFont;
+	ID3DXFont* menuFont;
+	ID3DXFont* menuBoldFont;
 
 	int backButtonState;
 

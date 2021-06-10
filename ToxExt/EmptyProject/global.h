@@ -2,6 +2,7 @@
 #include "page_manager.h"
 #include "calculate_manager.h"
 #include "file_manager.h"
+#include "functions.h"
 
 #define WINDOW_WIDTH 1280
 #define WINDOW_HEIGHT 720
@@ -18,8 +19,8 @@
 #define BUTTON_HEIGHT 50
 #define BUTTON_PADDING 10
 
-#define BACK_BUTTON_X WINDOW_WIDTH - 200
-#define BACK_BUTTON_Y WINDOW_HEIGHT - 100
+#define BACK_BUTTON_X WINDOW_WIDTH - 180
+#define BACK_BUTTON_Y WINDOW_HEIGHT - 60
 
 
 #define MAP_EMPTY 0

@@ -12,62 +12,30 @@ IntroPage::IntroPage()
 
 	backButtonState = 0;
 
-	D3DXCreateFont(DXUTGetD3D9Device(), 40, 0, FW_BOLD, 1, FALSE, DEFAULT_CHARSET,
-		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
-		L"³ª´®¹Ù¸¥°íµñ", &font);
-
 	backgroundTex = new LPDIRECT3DTEXTURE9();
-	D3DXCreateTextureFromFileExA(
-		DXUTGetD3D9Device()
-		, "resource/image/introBackground.png"
-		, D3DX_DEFAULT_NONPOW2
-		, D3DX_DEFAULT_NONPOW2
-		, 0, 0
-		, D3DFMT_UNKNOWN
-		, D3DPOOL_MANAGED
-		, D3DX_DEFAULT
-		, D3DX_DEFAULT
-		, 0, nullptr, nullptr
-		, backgroundTex);
-
-	backButtonTex1 = new LPDIRECT3DTEXTURE9();
-	D3DXCreateTextureFromFileExA(
-		DXUTGetD3D9Device()
-		, "resource/image/backButtonTex1.png"
-		, D3DX_DEFAULT_NONPOW2
-		, D3DX_DEFAULT_NONPOW2
-		, 0, 0
-		, D3DFMT_UNKNOWN
-		, D3DPOOL_MANAGED
-		, D3DX_DEFAULT
-		, D3DX_DEFAULT
-		, 0, nullptr, nullptr
-		, backButtonTex1);
-
-	backButtonTex2 = new LPDIRECT3DTEXTURE9();
-	D3DXCreateTextureFromFileExA(
-		DXUTGetD3D9Device()
-		, "resource/image/backButtonTex2.png"
-		, D3DX_DEFAULT_NONPOW2
-		, D3DX_DEFAULT_NONPOW2
-		, 0, 0
-		, D3DFMT_UNKNOWN
-		, D3DPOOL_MANAGED
-		, D3DX_DEFAULT
-		, D3DX_DEFAULT
-		, 0, nullptr, nullptr
-		, backButtonTex2);
+	lineTex = new LPDIRECT3DTEXTURE9();
+	mCreateTexture("resource/image/basicBackground.png", backgroundTex);
+	mCreateTexture("resource/image/line.png", lineTex);
 
 	D3DXCreateSprite(DXUTGetD3D9Device(), &spr);
+
+
+	mCreateFont(&titleFont, 60, FW_LIGHT);
+	mCreateFont(&textFont, 30, FW_LIGHT);
+	mCreateFont(&menuFont, 35, FW_LIGHT);
+	mCreateFont(&menuBoldFont, 35, FW_BOLD);
 }
 
 IntroPage::~IntroPage()
 {
 	(*backgroundTex)->Release();
-	(*backButtonTex1)->Release();
-	(*backButtonTex2)->Release();
+	(*lineTex)->Release();
 	spr->Release();
-	font->Release();
+
+	titleFont->Release();
+	textFont->Release();
+	menuFont->Release();
+	menuBoldFont->Release();
 
 }
 
@@ -81,8 +49,8 @@ void IntroPage::Update()
 	if (pt.x > BACK_BUTTON_X
 		&& pt.x < BACK_BUTTON_X + BUTTON_WIDTH)
 	{
-		if (pt.y > BACK_BUTTON_Y
-			&& pt.y < BACK_BUTTON_Y + BUTTON_HEIGHT)
+		if (pt.y > BACK_BUTTON_Y - BUTTON_PADDING
+			&& pt.y < BACK_BUTTON_Y + BUTTON_HEIGHT - BUTTON_PADDING)
 		{
 			backButtonState = 1;
 		}
@@ -119,29 +87,50 @@ void IntroPage::Render()
 {
 	D3DXVECTOR3 pos;
 	D3DXVECTOR3 cen;
-
-
-	spr->Begin(D3DXSPRITE_ALPHABLEND);
-	spr->Draw(*backgroundTex, nullptr, nullptr, nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
-	
-	pos = { BACK_BUTTON_X, BACK_BUTTON_Y, 0 };
-	if (backButtonState == 0)
-		spr->Draw(*backButtonTex1, nullptr, nullptr, &pos, D3DCOLOR_ARGB(255, 255, 255, 255));
-	else
-		spr->Draw(*backButtonTex2, nullptr, nullptr, &pos, D3DCOLOR_ARGB(255, 255, 255, 255));
-
-	spr->End();
-
-
-
+	USES_CONVERSION;
+	char cvalue[256];
 	WCHAR* wvalue;
 	RECT rc;
 
 
-	USES_CONVERSION;
+
+	// background
+	spr->Begin(D3DXSPRITE_ALPHABLEND);
+	spr->Draw(*backgroundTex, nullptr, nullptr, nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
+	spr->End();
+	
+
+	// title
+	sprintf_s(cvalue, "Intro");
+	wvalue = A2W(cvalue);
+	rc = { 50, 40, WINDOW_WIDTH, WINDOW_HEIGHT };
+	titleFont->DrawText(NULL, wvalue, -1, &rc, DT_NOCLIP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
+	// line
+	rc = { 0, 0, WINDOW_WIDTH - 60, 1 };
+	pos = { 30, 100, 0 };
+	spr->Begin(D3DXSPRITE_ALPHABLEND);
+	spr->Draw(*lineTex, &rc, nullptr, &pos, D3DCOLOR_ARGB(255, 255, 255, 255));
+	spr->End();
+
+	// backbutton
+	rc = { BACK_BUTTON_X, BACK_BUTTON_Y, BACK_BUTTON_X + BUTTON_WIDTH, BACK_BUTTON_Y + BUTTON_HEIGHT };
+	sprintf_s(cvalue, "¸ÞÀÎ¸Þ´º");
+	wvalue = A2W(cvalue);
+	if (backButtonState == 0)
+		menuFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+	else
+		menuBoldFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
+
+
+
+	// text
 	wvalue = A2W(text);
-	rc = { 50, 150, WINDOW_WIDTH - 50, WINDOW_HEIGHT };
-	font->DrawText(NULL, wvalue, -1, &rc, DT_NOCLIP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+	rc = { 50, 200, WINDOW_WIDTH - 50, WINDOW_HEIGHT };
+	textFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
+
 
 
 	
