@@ -108,7 +108,7 @@ void IntroPage::Render()
 
 	// line
 	rc = { 0, 0, WINDOW_WIDTH - 60, 1 };
-	pos = { 30, 100, 0 };
+	pos = { 30, 105, 0 };
 	spr->Begin(D3DXSPRITE_ALPHABLEND);
 	spr->Draw(*lineTex, &rc, nullptr, &pos, D3DCOLOR_ARGB(255, 255, 255, 255));
 	spr->End();

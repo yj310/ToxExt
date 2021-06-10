@@ -9,52 +9,18 @@ RankingPage::RankingPage()
 	backButtonState = 0;
 
 	backgroundTex = new LPDIRECT3DTEXTURE9();
-	D3DXCreateTextureFromFileExA(
-		DXUTGetD3D9Device()
-		, "resource/image/rankingBackground.png"
-		, D3DX_DEFAULT_NONPOW2
-		, D3DX_DEFAULT_NONPOW2
-		, 0, 0
-		, D3DFMT_UNKNOWN
-		, D3DPOOL_MANAGED
-		, D3DX_DEFAULT
-		, D3DX_DEFAULT
-		, 0, nullptr, nullptr
-		, backgroundTex);
-
-	backButtonTex1 = new LPDIRECT3DTEXTURE9();
-	D3DXCreateTextureFromFileExA(
-		DXUTGetD3D9Device()
-		, "resource/image/backButtonTex1.png"
-		, D3DX_DEFAULT_NONPOW2
-		, D3DX_DEFAULT_NONPOW2
-		, 0, 0
-		, D3DFMT_UNKNOWN
-		, D3DPOOL_MANAGED
-		, D3DX_DEFAULT
-		, D3DX_DEFAULT
-		, 0, nullptr, nullptr
-		, backButtonTex1);
-
-	backButtonTex2 = new LPDIRECT3DTEXTURE9();
-	D3DXCreateTextureFromFileExA(
-		DXUTGetD3D9Device()
-		, "resource/image/backButtonTex2.png"
-		, D3DX_DEFAULT_NONPOW2
-		, D3DX_DEFAULT_NONPOW2
-		, 0, 0
-		, D3DFMT_UNKNOWN
-		, D3DPOOL_MANAGED
-		, D3DX_DEFAULT
-		, D3DX_DEFAULT
-		, 0, nullptr, nullptr
-		, backButtonTex2);
+	lineTex = new LPDIRECT3DTEXTURE9();
+	mCreateTexture("resource/image/basicBackground.png", backgroundTex);
+	mCreateTexture("resource/image/line.png", lineTex);
 
 	D3DXCreateSprite(DXUTGetD3D9Device(), &spr); 
-	
-	D3DXCreateFont(DXUTGetD3D9Device(), 60, 0, FW_BOLD, 1, FALSE, DEFAULT_CHARSET,
-		OUT_DEFAULT_PRECIS, DEFAULT_QUALITY, DEFAULT_PITCH | FF_DONTCARE,
-		L"나눔바른고딕", &font);
+
+
+	mCreateFont(&titleFont, 60, FW_LIGHT);
+	mCreateFont(&textFont, 30, FW_LIGHT);
+	mCreateFont(&textLineFont, 30, FW_LIGHT);
+	mCreateFont(&menuFont, 35, FW_LIGHT);
+	mCreateFont(&menuBoldFont, 35, FW_BOLD);
 
 
 	fileManager.Load();
@@ -67,10 +33,14 @@ RankingPage::RankingPage()
 RankingPage::~RankingPage()
 {
 	(*backgroundTex)->Release();
-	(*backButtonTex1)->Release();
-	(*backButtonTex2)->Release();
+	(*lineTex)->Release();
 	spr->Release();
-	font->Release();
+
+	titleFont->Release();
+	textFont->Release();
+	textLineFont->Release();
+	menuFont->Release();
+	menuBoldFont->Release();
 }
 
 void RankingPage::Update()
@@ -83,8 +53,8 @@ void RankingPage::Update()
 	if (pt.x > BACK_BUTTON_X
 		&& pt.x < BACK_BUTTON_X + BUTTON_WIDTH)
 	{
-		if (pt.y > BACK_BUTTON_Y
-			&& pt.y < BACK_BUTTON_Y + BUTTON_HEIGHT)
+		if (pt.y > BACK_BUTTON_Y - BUTTON_PADDING
+			&& pt.y < BACK_BUTTON_Y + BUTTON_HEIGHT - BUTTON_PADDING)
 		{
 			backButtonState = 1;
 		}
@@ -99,6 +69,7 @@ void RankingPage::Update()
 		backButtonState = 0;
 	}
 
+
 	if ((GetAsyncKeyState(VK_LBUTTON) & 0x8000) != 0)
 	{
 		if (backButtonState == 1)
@@ -109,24 +80,12 @@ void RankingPage::Update()
 	}
 }
 
+#define LINE_HEIGHT 60
+
 void RankingPage::Render()
 {
 	D3DXVECTOR3 pos;
 	D3DXVECTOR3 cen;
-
-
-	spr->Begin(D3DXSPRITE_ALPHABLEND);
-	spr->Draw(*backgroundTex, nullptr, nullptr, nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
-
-	pos = { BACK_BUTTON_X, BACK_BUTTON_Y, 0 };
-	if (backButtonState == 0)
-		spr->Draw(*backButtonTex1, nullptr, nullptr, &pos, D3DCOLOR_ARGB(255, 255, 255, 255));
-	else
-		spr->Draw(*backButtonTex2, nullptr, nullptr, &pos, D3DCOLOR_ARGB(255, 255, 255, 255));
-
-	spr->End();
-
-
 	USES_CONVERSION;
 	int ivalue; int ivalue2;
 	float fvalue;
@@ -134,49 +93,90 @@ void RankingPage::Render()
 	WCHAR* wvalue;
 	RECT rc;
 
+	// background
+	spr->Begin(D3DXSPRITE_ALPHABLEND);
+	spr->Draw(*backgroundTex, nullptr, nullptr, nullptr, D3DCOLOR_ARGB(255, 255, 255, 255));
+	spr->End();
 
-	rc = { 300, 280, WINDOW_WIDTH, WINDOW_HEIGHT };
+	// title
+	sprintf_s(cvalue, "Ranking");
+	wvalue = A2W(cvalue);
+	rc = { 50, 40, WINDOW_WIDTH, WINDOW_HEIGHT };
+	titleFont->DrawText(NULL, wvalue, -1, &rc, DT_NOCLIP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+
+	// line
+	rc = { 0, 0, WINDOW_WIDTH - 60, 1 };
+	pos = { 30, 105, 0 };
+	spr->Begin(D3DXSPRITE_ALPHABLEND);
+	spr->Draw(*lineTex, &rc, nullptr, &pos, D3DCOLOR_ARGB(255, 255, 255, 255));
+	spr->End();
+
+	// backbutton
+	rc = { BACK_BUTTON_X, BACK_BUTTON_Y, BACK_BUTTON_X + BUTTON_WIDTH, BACK_BUTTON_Y + BUTTON_HEIGHT };
+	sprintf_s(cvalue, "메인메뉴");
+	wvalue = A2W(cvalue);
+	if (backButtonState == 0)
+		menuFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+	else
+		menuBoldFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 
 
-	rc.top = 150;
-	rc.left = 200;
+
+	// text
+	rc = { 300, 150, WINDOW_WIDTH, 150 + 100 };
+
+
+	rc.left = 300;
+	rc.right = rc.left + 100;
 	sprintf_s(cvalue, "순위");
 	wvalue = A2W(cvalue);
-	font->DrawText(NULL, wvalue, -1, &rc, DT_NOCLIP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+	textFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 
 
 	rc.left = 470;
+	rc.right = WINDOW_WIDTH - rc.left;
 	sprintf_s(cvalue, "score");
 	wvalue = A2W(cvalue);
-	font->DrawText(NULL, wvalue, -1, &rc, DT_NOCLIP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+	textFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 
 
-
-	rc.left = 920;
+	rc.right = WINDOW_WIDTH - 300;
+	rc.left = rc.right - 100;
 	sprintf_s(cvalue, "name");
 	wvalue = A2W(cvalue);
-	font->DrawText(NULL, wvalue, -1, &rc, DT_NOCLIP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+	textFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 
 
 	for (int i = 0; i < 5; i++)
 	{
-		rc.top = 250 + (70 * i);
-		rc.left = 220;
+		rc = { 300
+			, 250 + (LINE_HEIGHT * i)
+			, 300 + 100
+			, 250 + (LINE_HEIGHT * i) + 100
+		};
 		sprintf_s(cvalue, "%d", i+1);
 		wvalue = A2W(cvalue);
-		font->DrawText(NULL, wvalue, -1, &rc, DT_NOCLIP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		textFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 
 
-		rc.left = 410;
+		rc = { 470
+			, 250 + (LINE_HEIGHT * i)
+			, WINDOW_WIDTH - 470
+			, 250 + (LINE_HEIGHT * i) + 100
+		};
 		sprintf_s(cvalue, "%010d", playerInfo[i].score);
 		wvalue = A2W(cvalue);
-		font->DrawText(NULL, wvalue, -1, &rc, DT_NOCLIP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		textFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 
 
 
-		rc.left = 900;
+		rc = { WINDOW_WIDTH - 300 - 100
+			, 250 + (LINE_HEIGHT * i)
+			, WINDOW_WIDTH - 300
+			, 250 + (LINE_HEIGHT * i) + 100
+		};
 		wvalue = A2W(playerInfo[i].name);
-		font->DrawText(NULL, wvalue, -1, &rc, DT_NOCLIP, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
+		textFont->DrawText(NULL, wvalue, -1, &rc, DT_CENTER, D3DXCOLOR(1.0f, 1.0f, 1.0f, 1.0f));
 
 	}
 	
